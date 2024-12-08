@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    healthcheck:
+      test: "curl -f http://localhost:3000/robots.txt || exit 1"
+      interval: 5s
+      retries: 10
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/var/app:cached
+      - rails-tmp-data:/var/app/tmp:delegated
+      - bundle-data:/usr/local/bundle:delegated
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      start_period: 5s
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql-data:/var/lib/mysql:delegated
+
+volumes:
+  rails-tmp-data:
+  bundle-data:
+  mysql-data:
