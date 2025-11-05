@@ -1,0 +1,19 @@
+name: run ci
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  comment:
+    name: "run rspec"
+    runs-on: ubuntu-latest
+    permissions: # GITHUB_TOKENの権限を指定
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - run: gh pr comment "${GITHUB_HEAD_REF}" --body "Hello, ${GITHUB_ACTOR}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
